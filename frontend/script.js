@@ -1,11 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ---- Element Referansları ----
-  const mainContent = document.getElementById("main-content");
   const originalPanel = document.getElementById("original-text-panel");
   const summaryPanel = document.getElementById("summary-panel");
   const originalTextContent = document.getElementById("original-text-content");
   const summaryContent = document.getElementById("summary-content");
-  const summaryLoader = document.getElementById("summary-loader");
 
   const fileInput = document.getElementById("file-input");
   const uploadPrompt = document.getElementById("upload-prompt");
@@ -25,9 +23,103 @@ document.addEventListener("DOMContentLoaded", () => {
   const summarizeButton = document.getElementById("summarize-button");
   const resetButton = document.getElementById("reset-button");
 
-  // ---- Fonksiyonlar ----
+  // YENİ: Sesli Okuma Butonları
+  const ttsPlayOriginalBtn = document.getElementById("tts-play-original");
+  const ttsStopOriginalBtn = document.getElementById("tts-stop-original");
+  const ttsPlaySummaryBtn = document.getElementById("tts-play-summary");
+  const ttsStopSummaryBtn = document.getElementById("tts-stop-summary");
 
-  // Ayarları her iki panele de uygula
+  // ---- Sesli Okuma (TTS) ----
+  const synth = window.speechSynthesis;
+  if (!synth) {
+    console.log("Tarayıcınız sesli okuma özelliğini desteklemiyor.");
+    // Desteklemeyen tarayıcılarda butonları gizle
+    document
+      .querySelectorAll(".tts-controls")
+      .forEach((el) => (el.style.display = "none"));
+  }
+
+  let currentUtterance = null;
+
+  function handleTTS(textElement, playBtn) {
+    if (!synth) return;
+
+    if (synth.speaking) {
+      if (synth.paused) {
+        synth.resume();
+        playBtn.textContent = "⏸️";
+      } else {
+        synth.pause();
+        playBtn.textContent = "▶️";
+      }
+    } else {
+      const textToSpeak = textElement.innerText;
+      if (!textToSpeak.trim()) return;
+
+      // Yeni bir okuma başlatmadan önce mevcut olanı iptal et
+      synth.cancel();
+
+      currentUtterance = new SpeechSynthesisUtterance(textToSpeak);
+      currentUtterance.lang = "tr-TR"; // Türkçe okuma için dil ayarı
+
+      currentUtterance.onend = () => {
+        playBtn.textContent = "▶️";
+        currentUtterance = null;
+      };
+
+      synth.speak(currentUtterance);
+      playBtn.textContent = "⏸️";
+    }
+  }
+
+  function stopTTS(playBtn) {
+    if (synth) {
+      synth.cancel();
+      playBtn.textContent = "▶️";
+    }
+  }
+
+  // ---- Diğer Fonksiyonlar ----
+  function applyStyles() {
+    /* ... aynı kalacak ... */
+  }
+  function applyBionicReading(text) {
+    /* ... aynı kalacak ... */
+  }
+  function resetToInitialState() {
+    /* ... aynı kalacak ... */
+  }
+
+  // ---- Olay Dinleyicileri (Event Listeners) ----
+
+  // YENİ: Sesli Okuma Olay Dinleyicileri
+  ttsPlayOriginalBtn.addEventListener("click", () =>
+    handleTTS(originalTextContent, ttsPlayOriginalBtn)
+  );
+  ttsStopOriginalBtn.addEventListener("click", () =>
+    stopTTS(ttsPlayOriginalBtn)
+  );
+  ttsPlaySummaryBtn.addEventListener("click", () =>
+    handleTTS(summaryContent, ttsPlaySummaryBtn)
+  );
+  ttsStopSummaryBtn.addEventListener("click", () => stopTTS(ttsPlaySummaryBtn));
+
+  // Mevcut Diğer Olay Dinleyicileri
+  fileInput.addEventListener("change", async (event) => {
+    /* ... aynı kalacak ... */
+  });
+  summarizeButton.addEventListener("click", async () => {
+    /* ... aynı kalacak ... */
+  });
+  resetButton.addEventListener("click", () => {
+    /* ... resetToInitialState çağrısı aynı kalacak, içine stopTTS eklenecek ... */
+  });
+  Object.values(controls).forEach((control) => {
+    control.addEventListener("input", applyStyles);
+  });
+
+  // ---- Fonksiyonların Tam İçerikleri ----
+
   function applyStyles() {
     const styles = {
       fontFamily: controls.fontFamily.value,
@@ -38,12 +130,10 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     Object.assign(originalPanel.style, styles);
     Object.assign(summaryPanel.style, styles);
-
     valueDisplays.fontSize.textContent = controls.fontSize.value;
     valueDisplays.lineHeight.textContent = controls.lineHeight.value;
   }
 
-  // Biyonik Okuma Fonksiyonu
   function applyBionicReading(text) {
     return text
       .split(/(\s+)/)
@@ -57,8 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
       .join("");
   }
 
-  // Arayüzü başlangıç durumuna sıfırla
   function resetToInitialState() {
+    stopTTS(ttsPlayOriginalBtn);
+    stopTTS(ttsPlaySummaryBtn);
     uploadPrompt.style.display = "flex";
     originalTextContent.innerHTML = "";
     summaryPanel.style.display = "none";
@@ -67,31 +158,23 @@ document.addEventListener("DOMContentLoaded", () => {
     summarizeButton.disabled = true;
   }
 
-  // ---- Olay Dinleyicileri (Event Listeners) ----
-
-  // Dosya seçildiğinde
   fileInput.addEventListener("change", async (event) => {
     const file = event.target.files[0];
     if (!file) return;
-
     resetToInitialState();
     uploadPrompt.style.display = "none";
-    originalTextContent.innerHTML = '<div class="loader"></div>'; // Yükleniyor animasyonu
-
+    originalTextContent.innerHTML = '<div class="loader"></div>';
     const formData = new FormData();
     formData.append("file", file);
-
     try {
       const response = await fetch("http://127.0.0.1:8000/extract-text/", {
         method: "POST",
         body: formData,
       });
-
       if (!response.ok) {
         const err = await response.json();
         throw new Error(err.detail || "Dosya okunamadı.");
       }
-
       const result = await response.json();
       originalTextContent.innerHTML = result.text
         .split("\n")
@@ -103,45 +186,29 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Özetle Butonu
   summarizeButton.addEventListener("click", async () => {
     const textToSummarize = originalPanel.innerText;
     if (!textToSummarize.trim()) {
-      alert("Özetlenecek metin bulunamadı. Lütfen bir dosya yükleyin.");
+      alert("Özetlenecek metin bulunamadı.");
       return;
     }
-
-    // Arayüzü güncelle: Özet panelini göster ve "Özetleniyor..." durumunu ayarla
     summaryPanel.style.display = "flex";
     summarizeButton.disabled = true;
-
-    // YENİ: "Özetleniyor..." metnini ve animasyonunu doğrudan HTML olarak ekle
-    summaryContent.innerHTML = `
-        <div class="loader-container">
-            <div class="loader"></div>
-            <p class="loading-text">Özetleniyor...</p>
-        </div>
-    `;
-
+    summaryContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p class="loading-text">Özetleniyor...</p></div>`;
     try {
       const response = await fetch("http://127.0.0.1:8000/summarize-text/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: textToSummarize }),
       });
-
       if (!response.ok) {
         const err = await response.json();
         throw new Error(err.detail || "Özetleme hatası.");
       }
-
       const result = await response.json();
-
-      // Özet geldiğinde, "Özetleniyor..." HTML'i tamamen silinir ve yerine bu yeni HTML gelir.
       const rawHtml = marked.parse(result.summary);
       const tempDiv = document.createElement("div");
       tempDiv.innerHTML = rawHtml;
-
       tempDiv.querySelectorAll("p, li").forEach((element) => {
         const textNodes = Array.from(element.childNodes).filter(
           (node) => node.nodeType === Node.TEXT_NODE
@@ -153,26 +220,20 @@ document.addEventListener("DOMContentLoaded", () => {
           node.replaceWith(span);
         });
       });
-
       summaryContent.innerHTML = tempDiv.innerHTML;
     } catch (error) {
-      // Hata durumunda da "Özetleniyor..." HTML'i silinir ve yerine hata mesajı gelir.
       summaryContent.innerHTML = `<p style="color: red; text-align: center;">Hata: ${error.message}</p>`;
     } finally {
-      // İşlem bittiğinde butonu tekrar aktif et
       summarizeButton.disabled = false;
     }
   });
 
-  // Sıfırlama Butonu
   resetButton.addEventListener("click", resetToInitialState);
 
-  // Kontrol paneli dinleyicileri
   Object.values(controls).forEach((control) => {
     control.addEventListener("input", applyStyles);
   });
 
-  // Sayfa ilk yüklendiğinde başlangıç ayarlarını yap
   applyStyles();
   summarizeButton.disabled = true;
 });

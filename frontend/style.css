@@ -1,3 +1,10 @@
+@font-face {
+  font-family: "OpenDyslexic";
+  src: url("fonts/OpenDyslexic-Regular.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
 :root {
   --background-color: #fdfdf5;
   --text-color: #2c3e50;
@@ -263,4 +270,39 @@ button {
 .loading-text {
   font-size: 1.2rem;
   font-weight: 500;
+}
+
+/* SESLİ OKUMA KONTROLLERİ İÇİN STİLLER */
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: -10px 0 20px 0; /* Başlık ve butonları daha iyi konumlandırmak için */
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.text-panel h4 {
+    margin: 0;
+    padding: 0;
+    border: none; /* Eski stili kaldır */
+}
+
+.tts-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.tts-controls button {
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    color: #333;
+    padding: 5px 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.tts-controls button:hover {
+    background-color: #e0e0e0;
 }

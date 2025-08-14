@@ -1,22 +1,22 @@
 # Disleksi Dostu AI Okuma ve Özetleme Aracı
 
-Bu proje, disleksi gibi okuma güçlüğü çeken bireylerin dijital metinleri daha kolay anlamalarını ve işlemelerini sağlamak amacıyla geliştirilmiş bir web uygulamasıdır. Kullanıcılar, .pdf, .docx veya .txt formatındaki belgeleri yükleyerek metin içeriğini, okumayı kolaylaştıran çeşitli görsel ayarlarla (yazı tipi, boyut, renkler vb.) görüntüleyebilirler.
+Bu proje, disleksi gibi okuma güçlüğü çeken bireylerin dijital metinleri daha kolay anlamalarını ve işlemelerini sağlamak amacıyla geliştirilmiş, zengin özelliklere sahip bir web uygulamasıdır. Kullanıcılar, .pdf, .docx veya .txt formatındaki belgeleri yükleyerek metin içeriğini, okumayı kolaylaştıran çeşitli görsel ve işitsel ayarlarla kişiselleştirebilirler.
 
-Uygulamanın en güçlü özelliklerinden biri, yerel olarak **Ollama** üzerinde çalışan `qwen3:8b` dil modelini kullanarak yüklenen metinler için yapılandırılmış ve disleksi dostu özetler oluşturmasıdır. Bu sayede hem veri gizliliği korunur hem de uzun metinlerin ana fikirleri hızlıca öğrenilebilir.
+Uygulamanın en güçlü özelliklerinden biri, yerel olarak **Ollama** üzerinde çalışan `cogito:8b` dil modelini kullanarak yüklenen metinler için yapılandırılmış ve disleksi dostu özetler oluşturmasıdır. Bu sayede hem veri gizliliği korunur hem de uzun metinlerin ana fikirleri hızlıca ve kolayca öğrenilebilir.
 
 ## Temel Özellikler
 
 - **Dosya Yükleme:** `.pdf`, `.docx` ve `.txt` formatındaki belgeleri destekler.
+- **Sesli Okuma (Text-to-Speech):** Orijinal metni ve özeti, tarayıcının dahili ses motoruyla dinleme imkanı sunar. Oynatma, duraklatma ve durdurma kontrolleri mevcuttur.
+- **Genişletilmiş Font Desteği:** Okumayı kolaylaştıran, özel olarak eklenmiş **OpenDyslexic** fontu dahil olmak üzere çeşitli font seçenekleri sunar.
 - **Yan Yana Görünüm:** Yüklenen belgenin orijinal metni ile yapay zeka tarafından oluşturulan özetini aynı ekranda karşılaştırmalı olarak gösterir.
-- **Disleksi Dostu Görünüm Ayarları:**
-  - Farklı yazı tipleri (Lexend, Open Sans vb.) seçimi.
+- **Gelişmiş Görünüm Ayarları:**
   - Ayarlanabilir yazı boyutu ve satır aralığı.
   - Kişiselleştirilebilir yazı ve arka plan renkleri.
-- **Paylaşımlı Kontroller:** Görünüm ayarları, hem orijinal metne hem de özet metnine anlık olarak etki eder.
-- **Yerel Yapay Zeka ile Özetleme:**
-  - Ollama ve `qwen2:7b` modeli ile tamamen yerelde çalışır, internet bağlantısına veya harici API'lere ihtiyaç duymaz.
-  - Özetler, başlıklar, madde imleri ve **Biyonik Okuma** tekniği (kelimelerin ilk harflerinin kalınlaştırılması) ile zenginleştirilmiş, anlaşılması kolay bir formatta sunulur.
-- **Modern ve Kullanıcı Dostu Arayüz:** Temiz, sezgisel ve etkileşimli bir web arayüzü.
+  - Tüm ayarlar hem orijinal metne hem de özete anlık olarak etki eder.
+- **Yerel ve Akıllı Özetleme:**
+  - Ollama ile tamamen yerelde çalışır, veri gizliliğini en üst düzeyde tutar.
+  - Özetler; başlıklar, madde imleri, **Biyonik Okuma** tekniği ve **gereksiz giriş cümlelerinden arındırılmış** net bir formatta sunulur.
 
 ## Kullanılan Teknolojiler
 
@@ -30,8 +30,9 @@ Uygulamanın en güçlü özelliklerinden biri, yerel olarak **Ollama** üzerind
 - **Frontend:**
   - **HTML5**
   - **CSS3** (Flexbox ile modern layout).
-  - **Vanilla JavaScript:** Harici bir framework olmadan arayüz mantığını yönetmek için.
-  - **Marked.js:** Yapay zekadan gelen Markdown formatındaki özeti HTML'e çevirmek için.
+  - **Vanilla JavaScript:** Arayüz mantığını yönetmek için.
+  - **Web Speech API:** Sesli okuma işlevselliği için.
+  - **Marked.js:** Markdown formatındaki özeti HTML'e çevirmek için.
 
 ## Kurulum ve Çalıştırma
 
@@ -42,20 +43,28 @@ Bu projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izley
 - **Python 3.9 veya üstü:** [python.org](https://www.python.org/)
 - **Ollama:** [ollama.com](https://ollama.com/)
 
-### Adım 1: Proje Dosyalarını Oluşturma
+### Adım 1: Projeyi Klonlama (veya İndirme)
 
-Bu dökümandaki kodları kullanarak proje klasör yapısını ve dosyalarını oluşturun.
+```bash
+git clone [https://github.com/ACRZeuss/dyslexia-summarizer.git](https://github.com/ACRZeuss/dyslexia-summarizer.git)
+cd proje-adiniz
+```
 
-### Adım 2: Ollama Modelinin Kurulumu
+### Adım 2: OpenDyslexic Fontunun İndirilmesi (Önemli)
+
+1.  [OpenDyslexic'in resmi web sitesine](https://opendyslexic.org/) gidin ve font ailesini ("Download Now" butonu ile) indirin.
+2.  Projenizin `frontend` klasörü içinde `fonts` adında yeni bir klasör oluşturun.
+3.  İndirdiğiniz `.zip` dosyasını açın ve içindeki font dosyalarını (örn: `OpenDyslexic-Regular.otf`) oluşturduğunuz `frontend/fonts/` klasörünün içine kopyalayın.
+
+### Adım 3: Ollama Modelinin Kurulumu
 
 Ollama'yı kurduktan sonra, terminali açın ve projede kullanılan dil modelini aşağıdaki komutla indirin:
 
 ```bash
-ollama pull qwen3:8b
+ollama pull cogito:8b
 ```
-*(Not: Farklı bir model kullanmak isterseniz `backend/main.py` dosyasındaki model adını değiştirebilirsiniz.)*
 
-### Adım 3: Backend Kurulumu
+### Adım 4: Backend Kurulumu
 
 1.  `backend` klasörüne gidin.
     ```bash
@@ -65,10 +74,8 @@ ollama pull qwen3:8b
     ```bash
     # Sanal ortam oluşturma
     python -m venv venv
-
     # Aktive etme (macOS/Linux)
     source venv/bin/activate
-
     # Aktive etme (Windows)
     .\venv\Scripts\activate
     ```
@@ -77,7 +84,7 @@ ollama pull qwen3:8b
     pip install -r requirements.txt
     ```
 
-### Adım 4: Backend'i Çalıştırma
+### Adım 5: Backend'i Çalıştırma
 
 Ayrı bir terminal açın ve `backend` klasöründeyken aşağıdaki komutu çalıştırın:
 
@@ -86,7 +93,7 @@ uvicorn main:app --reload
 ```
 Sunucu artık `http://127.0.0.1:8000` adresinde çalışıyor olacak.
 
-### Adım 5: Frontend'i Çalıştırma
+### Adım 6: Frontend'i Çalıştırma
 
 Başka bir terminal açın ve projenin `frontend` klasörüne gidin:
 
@@ -99,3 +106,29 @@ Python'un dahili web sunucusunu kullanarak frontend'i yayınlayın:
 python -m http.server 8080
 ```
 Şimdi web tarayıcınızı açın ve **`http://localhost:8080`** adresine gidin.
+
+## Kullanım
+
+1.  Uygulamayı tarayıcıda açtığınızda karşınıza bir dosya yükleme ekranı çıkacaktır.
+2.  "Dosya Yükle" butonuna tıklayarak bir dosya seçin. Metin sol panelde görünecektir.
+3.  Sağdaki "Görünüm Ayarları" panelini kullanarak metnin görünümünü kişiselleştirin.
+4.  Metni dinlemek için sol panelin üstündeki ▶️ butonuna tıklayın.
+5.  Özet oluşturmak için "Yapay Zeka ile Özetle" butonuna tıklayın. Özet sağ panelde belirecektir.
+6.  Özeti dinlemek için sağ panelin üstündeki ▶️ butonunu kullanın.
+7.  Arayüzü sıfırlamak için "Yeni Dosya Yükle" butonuna tıklayın.
+
+## Proje Yapısı
+
+```
+dyslexia-summarizer/
+├── backend/
+│   ├── main.py           # FastAPI sunucusu ve API endpoint'leri
+│   └── requirements.txt    # Python bağımlılıkları
+├── frontend/
+│   ├── fonts/            # OpenDyslexic gibi özel font dosyaları
+│   │   └── OpenDyslexic-Regular.otf 
+│   ├── index.html        # Ana web sayfası
+│   ├── style.css         # Sayfa stilleri
+│   └── script.js         # Arayüz mantığı ve backend iletişimi
+└── README.md             # Bu dosya
+```

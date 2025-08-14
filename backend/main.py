@@ -90,7 +90,7 @@ async def summarize_text(request: TextRequest):
         {text_content}
         """
         response = ollama.chat(
-            model='qwen3:8b',
+            model='cogito:8b',
             messages=[{'role': 'user', 'content': prompt}]
         )
         return {"summary": response['message']['content']}

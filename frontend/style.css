@@ -1,0 +1,266 @@
+:root {
+  --background-color: #fdfdf5;
+  --text-color: #2c3e50;
+  --primary-color: #3498db;
+  --secondary-color: #f1f3f4;
+  --border-color: #e0e0e0;
+  --panel-bg: #ffffff;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+  margin: 0;
+  background-color: var(--secondary-color);
+  overflow: hidden; /* Kaydırma çubuklarını panellerin içine hapset */
+}
+
+.app-container {
+  display: flex;
+  height: 100vh;
+}
+
+/* ANA İÇERİK: İKİ PANELİ TUTAN WRAPPER */
+.main-content-wrapper {
+  flex-grow: 1;
+  display: flex;
+  gap: 15px;
+  padding: 15px;
+}
+
+/* ORTAK PANEL STİLİ */
+.text-panel {
+  flex: 1; /* Panellerin eşit yer kaplamasını sağlar */
+  background-color: var(--background-color);
+  color: var(--text-color);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  overflow-y: auto; /* Sadece panelin içi scroll edilebilir olsun */
+  padding: 30px;
+  transition: all 0.3s ease;
+  font-size: 20px;
+  line-height: 1.8;
+}
+
+.text-panel h4 {
+  margin: 0 0 20px 0;
+  color: var(--primary-color);
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border-color);
+}
+
+/* DOSYA YÜKLEME EKRANI */
+.upload-prompt {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  text-align: center;
+  color: #888;
+}
+
+.upload-prompt img {
+  opacity: 0.5;
+  margin-bottom: 20px;
+}
+
+.file-label {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 12px 25px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-weight: 500;
+  margin-top: 15px;
+}
+.file-label:hover {
+  background-color: #2980b9;
+}
+
+/* KONTROL PANELİ (Sağ taraf) */
+.controls {
+  width: 320px;
+  flex-shrink: 0;
+  background-color: var(--panel-bg);
+  padding: 25px;
+  overflow-y: auto;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.controls h2 {
+  margin: 0;
+  text-align: center;
+  color: #333;
+}
+.controls-info {
+  font-size: 0.8rem;
+  text-align: center;
+  color: #777;
+  margin: -10px 0 10px 0;
+  padding: 5px;
+  background: #fafafa;
+  border-radius: 5px;
+}
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.control-group label {
+  font-weight: 500;
+  color: #555;
+}
+select,
+input[type="range"] {
+  width: 100%;
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+}
+input[type="range"] {
+  padding: 0;
+}
+.color-picker {
+  flex-direction: row;
+  justify-content: space-around;
+}
+.color-picker div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+input[type="color"] {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  background-color: transparent;
+  padding: 0;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+}
+.actions {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+#summarize-button {
+  background-color: var(--primary-color);
+  color: white;
+}
+#summarize-button:hover {
+  background-color: #2980b9;
+}
+#summarize-button:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+.secondary {
+  background-color: var(--secondary-color);
+  color: #333;
+}
+.secondary:hover {
+  background-color: #e0e0e0;
+}
+
+/* ÖZET İÇİN ÖZEL STİLLER */
+#summary-content h3 {
+  font-size: 1.5rem;
+  color: var(--primary-color);
+}
+#summary-content ul {
+  list-style: none;
+  padding-left: 0;
+}
+#summary-content li {
+  background-color: rgba(0, 0, 0, 0.03);
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+#summary-content li:nth-child(even) {
+  background-color: rgba(0, 0, 0, 0.06);
+}
+#summary-content strong {
+  font-weight: 600;
+  color: #1a2533;
+}
+.loader {
+  border: 6px solid #f3f3f3;
+  border-top: 6px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 40px auto;
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1024px) {
+  .app-container {
+    flex-direction: column-reverse;
+    height: auto;
+  }
+  .controls {
+    width: 100%;
+    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.05);
+  }
+  .main-content-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+  .text-panel {
+    height: 50vh;
+  }
+}
+
+/* YÜKLENİYOR METNİ VE ANİMASYONU İÇİN STİL */
+.loader-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  height: 100%;
+  color: #888;
+}
+
+.loading-text {
+  font-size: 1.2rem;
+  font-weight: 500;
+}

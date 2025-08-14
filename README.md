@@ -46,7 +46,7 @@ Bu projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izley
 ### Adım 1: Projeyi Klonlama (veya İndirme)
 
 ```bash
-git clone [https://github.com/ACRZeuss/dyslexia-summarizer.git](https://github.com/ACRZeuss/dyslexia-summarizer.git)
+git clone https://github.com/ACRZeuss/dyslexia-summarizer.git
 cd dyslexia-summarizer
 ```
 

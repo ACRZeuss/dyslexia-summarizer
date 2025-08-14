@@ -47,7 +47,7 @@ Bu projeyi yerel makinenizde çalıştırmak için aşağıdaki adımları izley
 
 ```bash
 git clone [https://github.com/ACRZeuss/dyslexia-summarizer.git](https://github.com/ACRZeuss/dyslexia-summarizer.git)
-cd proje-adiniz
+cd dyslexia-summarizer
 ```
 
 ### Adım 2: OpenDyslexic Fontunun İndirilmesi (Önemli)

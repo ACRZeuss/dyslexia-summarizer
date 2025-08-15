@@ -14,6 +14,8 @@ Uygulamanın en güçlü özelliklerinden biri, yerel olarak **Ollama** üzerind
   - Ayarlanabilir yazı boyutu ve satır aralığı.
   - Kişiselleştirilebilir yazı ve arka plan renkleri.
   - Tüm ayarlar hem orijinal metne hem de özete anlık olarak etki eder.
+- **Ayarlanabilir Özet Uzunluğu:**
+  - Kullanıcının ihtiyacına göre Kısa (%25), Orta (%50) ve Detaylı (%75) olmak üzere üç farklı özet uzunluğu seçebilme imkanı.
 - **Yerel ve Akıllı Özetleme:**
   - Ollama ile tamamen yerelde çalışır, veri gizliliğini en üst düzeyde tutar.
   - Özetler; başlıklar, madde imleri, **Biyonik Okuma** tekniği ve **gereksiz giriş cümlelerinden arındırılmış** net bir formatta sunulur.

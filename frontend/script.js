@@ -1,13 +1,71 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ---- Element Referansları ----
+  // ... diğer referanslar aynı ...
+  const summarizeButton = document.getElementById("summarize-button");
+  const resetButton = document.getElementById("reset-button");
+
+  // YENİ: Oran Butonları Referansları
+  const ratioControls = document.getElementById("summary-ratio-controls");
+  const ratioButtons = document.querySelectorAll(".ratio-button");
+
+  // ... diğer referanslar aynı ...
+  const ttsPlayOriginalBtn = document.getElementById("tts-play-original");
+  const ttsStopOriginalBtn = document.getElementById("tts-stop-original");
+  // ... (kodun geri kalanı okunabilirlik için kısaltıldı, tam dosya aşağıda)
+
+  // ---- Olay Dinleyicileri (Event Listeners) ----
+
+  // YENİ: Oran Butonları için olay dinleyicisi
+  ratioControls.addEventListener("click", (e) => {
+    if (e.target.classList.contains("ratio-button")) {
+      ratioButtons.forEach((btn) => btn.classList.remove("active"));
+      e.target.classList.add("active");
+    }
+  });
+
+  // GÜNCELLENDİ: Özetle Butonu olay dinleyicisi
+  summarizeButton.addEventListener("click", async () => {
+    const textToSummarize = originalPanel.innerText;
+    if (!textToSummarize.trim()) {
+      alert("Özetlenecek metin bulunamadı.");
+      return;
+    }
+
+    // YENİ: Aktif oranı al
+    const activeRatioButton = document.querySelector(".ratio-button.active");
+    const ratio = parseFloat(activeRatioButton.dataset.ratio); // 0.25, 0.50, 0.75
+
+    summaryPanel.style.display = "flex";
+    summarizeButton.disabled = true;
+    summaryContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p class="loading-text">Özetleniyor...</p></div>`;
+    try {
+      const response = await fetch("http://127.0.0.1:8000/summarize-text/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        // YENİ: Oranı isteğin body'sine ekle
+        body: JSON.stringify({ text: textToSummarize, ratio: ratio }),
+      });
+      // ... (kodun geri kalanı aynı) ...
+    } catch (error) {
+      summaryContent.innerHTML = `<p style="color: red; text-align: center;">Hata: ${error.message}</p>`;
+    } finally {
+      summarizeButton.disabled = false;
+    }
+  });
+
+  // ... (diğer tüm fonksiyonlar ve olay dinleyicileri burada) ...
+  // Aşağıda tam ve güncel script.js dosyası bulunmaktadır.
+});
+
+// YUKARIDAKİ KISALTILMIŞ ÖRNEK YERİNE AŞAĞIDAKİ TAM KODU KULLANIN
+// ---- TAM VE GÜNCEL script.js ----
+document.addEventListener("DOMContentLoaded", () => {
   const originalPanel = document.getElementById("original-text-panel");
   const summaryPanel = document.getElementById("summary-panel");
   const originalTextContent = document.getElementById("original-text-content");
   const summaryContent = document.getElementById("summary-content");
-
   const fileInput = document.getElementById("file-input");
   const uploadPrompt = document.getElementById("upload-prompt");
-
   const controls = {
     fontFamily: document.getElementById("font-family"),
     fontSize: document.getElementById("font-size"),
@@ -19,31 +77,25 @@ document.addEventListener("DOMContentLoaded", () => {
     fontSize: document.getElementById("font-size-value"),
     lineHeight: document.getElementById("line-height-value"),
   };
-
   const summarizeButton = document.getElementById("summarize-button");
   const resetButton = document.getElementById("reset-button");
-
-  // YENİ: Sesli Okuma Butonları
   const ttsPlayOriginalBtn = document.getElementById("tts-play-original");
   const ttsStopOriginalBtn = document.getElementById("tts-stop-original");
   const ttsPlaySummaryBtn = document.getElementById("tts-play-summary");
   const ttsStopSummaryBtn = document.getElementById("tts-stop-summary");
+  const ratioControls = document.getElementById("summary-ratio-controls");
+  const ratioButtons = document.querySelectorAll(".ratio-button");
 
-  // ---- Sesli Okuma (TTS) ----
   const synth = window.speechSynthesis;
   if (!synth) {
     console.log("Tarayıcınız sesli okuma özelliğini desteklemiyor.");
-    // Desteklemeyen tarayıcılarda butonları gizle
     document
       .querySelectorAll(".tts-controls")
       .forEach((el) => (el.style.display = "none"));
   }
-
   let currentUtterance = null;
-
   function handleTTS(textElement, playBtn) {
     if (!synth) return;
-
     if (synth.speaking) {
       if (synth.paused) {
         synth.resume();
@@ -55,71 +107,23 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       const textToSpeak = textElement.innerText;
       if (!textToSpeak.trim()) return;
-
-      // Yeni bir okuma başlatmadan önce mevcut olanı iptal et
       synth.cancel();
-
       currentUtterance = new SpeechSynthesisUtterance(textToSpeak);
-      currentUtterance.lang = "tr-TR"; // Türkçe okuma için dil ayarı
-
+      currentUtterance.lang = "tr-TR";
       currentUtterance.onend = () => {
         playBtn.textContent = "▶️";
         currentUtterance = null;
       };
-
       synth.speak(currentUtterance);
       playBtn.textContent = "⏸️";
     }
   }
-
   function stopTTS(playBtn) {
     if (synth) {
       synth.cancel();
       playBtn.textContent = "▶️";
     }
   }
-
-  // ---- Diğer Fonksiyonlar ----
-  function applyStyles() {
-    /* ... aynı kalacak ... */
-  }
-  function applyBionicReading(text) {
-    /* ... aynı kalacak ... */
-  }
-  function resetToInitialState() {
-    /* ... aynı kalacak ... */
-  }
-
-  // ---- Olay Dinleyicileri (Event Listeners) ----
-
-  // YENİ: Sesli Okuma Olay Dinleyicileri
-  ttsPlayOriginalBtn.addEventListener("click", () =>
-    handleTTS(originalTextContent, ttsPlayOriginalBtn)
-  );
-  ttsStopOriginalBtn.addEventListener("click", () =>
-    stopTTS(ttsPlayOriginalBtn)
-  );
-  ttsPlaySummaryBtn.addEventListener("click", () =>
-    handleTTS(summaryContent, ttsPlaySummaryBtn)
-  );
-  ttsStopSummaryBtn.addEventListener("click", () => stopTTS(ttsPlaySummaryBtn));
-
-  // Mevcut Diğer Olay Dinleyicileri
-  fileInput.addEventListener("change", async (event) => {
-    /* ... aynı kalacak ... */
-  });
-  summarizeButton.addEventListener("click", async () => {
-    /* ... aynı kalacak ... */
-  });
-  resetButton.addEventListener("click", () => {
-    /* ... resetToInitialState çağrısı aynı kalacak, içine stopTTS eklenecek ... */
-  });
-  Object.values(controls).forEach((control) => {
-    control.addEventListener("input", applyStyles);
-  });
-
-  // ---- Fonksiyonların Tam İçerikleri ----
-
   function applyStyles() {
     const styles = {
       fontFamily: controls.fontFamily.value,
@@ -133,7 +137,6 @@ document.addEventListener("DOMContentLoaded", () => {
     valueDisplays.fontSize.textContent = controls.fontSize.value;
     valueDisplays.lineHeight.textContent = controls.lineHeight.value;
   }
-
   function applyBionicReading(text) {
     return text
       .split(/(\s+)/)
@@ -146,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .join("");
   }
-
   function resetToInitialState() {
     stopTTS(ttsPlayOriginalBtn);
     stopTTS(ttsPlaySummaryBtn);
@@ -157,6 +159,23 @@ document.addEventListener("DOMContentLoaded", () => {
     fileInput.value = "";
     summarizeButton.disabled = true;
   }
+
+  ratioControls.addEventListener("click", (e) => {
+    if (e.target.classList.contains("ratio-button")) {
+      ratioButtons.forEach((btn) => btn.classList.remove("active"));
+      e.target.classList.add("active");
+    }
+  });
+  ttsPlayOriginalBtn.addEventListener("click", () =>
+    handleTTS(originalTextContent, ttsPlayOriginalBtn)
+  );
+  ttsStopOriginalBtn.addEventListener("click", () =>
+    stopTTS(ttsPlayOriginalBtn)
+  );
+  ttsPlaySummaryBtn.addEventListener("click", () =>
+    handleTTS(summaryContent, ttsPlaySummaryBtn)
+  );
+  ttsStopSummaryBtn.addEventListener("click", () => stopTTS(ttsPlaySummaryBtn));
 
   fileInput.addEventListener("change", async (event) => {
     const file = event.target.files[0];
@@ -192,6 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Özetlenecek metin bulunamadı.");
       return;
     }
+    const activeRatioButton = document.querySelector(".ratio-button.active");
+    const ratio = parseFloat(activeRatioButton.dataset.ratio);
     summaryPanel.style.display = "flex";
     summarizeButton.disabled = true;
     summaryContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p class="loading-text">Özetleniyor...</p></div>`;
@@ -199,7 +220,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("http://127.0.0.1:8000/summarize-text/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: textToSummarize }),
+        body: JSON.stringify({ text: textToSummarize, ratio: ratio }),
       });
       if (!response.ok) {
         const err = await response.json();
@@ -229,11 +250,9 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   resetButton.addEventListener("click", resetToInitialState);
-
   Object.values(controls).forEach((control) => {
     control.addEventListener("input", applyStyles);
   });
-
   applyStyles();
   summarizeButton.disabled = true;
 });

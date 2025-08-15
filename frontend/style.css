@@ -274,35 +274,69 @@ button {
 
 /* SESLİ OKUMA KONTROLLERİ İÇİN STİLLER */
 .panel-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: -10px 0 20px 0; /* Başlık ve butonları daha iyi konumlandırmak için */
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: -10px 0 20px 0; /* Başlık ve butonları daha iyi konumlandırmak için */
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--border-color);
 }
 
 .text-panel h4 {
-    margin: 0;
-    padding: 0;
-    border: none; /* Eski stili kaldır */
+  margin: 0;
+  padding: 0;
+  border: none; /* Eski stili kaldır */
 }
 
 .tts-controls {
-    display: flex;
-    gap: 8px;
+  display: flex;
+  gap: 8px;
 }
 
 .tts-controls button {
-    background-color: var(--secondary-color);
-    border: 1px solid var(--border-color);
-    color: #333;
-    padding: 5px 10px;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: var(--secondary-color);
+  border: 1px solid var(--border-color);
+  color: #333;
+  padding: 5px 10px;
+  font-size: 1rem;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .tts-controls button:hover {
-    background-color: #e0e0e0;
+  background-color: #e0e0e0;
+}
+
+/* ÖZET ORANI KONTROLLERİ İÇİN STİLLER */
+.summary-ratio-controls {
+  display: flex;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ratio-button {
+  flex: 1;
+  background-color: #fff;
+  color: #333;
+  border: none;
+  padding: 10px 5px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  border-right: 1px solid var(--border-color);
+}
+
+.ratio-button:last-child {
+  border-right: none;
+}
+
+.ratio-button:hover {
+  background-color: #f0f0f0;
+}
+
+.ratio-button.active {
+  background-color: var(--primary-color);
+  color: white;
+  font-weight: 600;
 }

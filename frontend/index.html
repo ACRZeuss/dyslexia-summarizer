@@ -52,6 +52,7 @@
           <div id="summary-content"></div>
         </div>
       </main>
+
       <aside class="controls">
         <h2>Görünüm Ayarları</h2>
         <p class="controls-info">Bu ayarlar her iki metne de uygulanır.</p>
@@ -94,7 +95,21 @@
             <input type="color" id="bg-color" value="#FDFDF5" />
           </div>
         </div>
+
         <div class="actions">
+          <div class="control-group">
+            <label>Özet Uzunluğu</label>
+            <div id="summary-ratio-controls" class="summary-ratio-controls">
+              <button class="ratio-button active" data-ratio="0.25">
+                Kısa (%25)
+              </button>
+              <button class="ratio-button" data-ratio="0.50">Orta (%50)</button>
+              <button class="ratio-button" data-ratio="0.75">
+                Detaylı (%75)
+              </button>
+            </div>
+          </div>
+
           <button id="summarize-button">Yapay Zeka ile Özetle</button>
           <button id="reset-button" class="secondary">Yeni Dosya Yükle</button>
         </div>

@@ -1,4 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
+  // ---- Element Referansları ----
+  const mainContent = document.getElementById("main-content");
+  const toggleOriginalPanelBtn = document.getElementById(
+    "toggle-original-panel"
+  );
   const originalPanel = document.getElementById("original-text-panel");
   const summaryPanel = document.getElementById("summary-panel");
   const originalTextContent = document.getElementById("original-text-content");
@@ -25,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const ttsStopSummaryBtn = document.getElementById("tts-stop-summary");
   const ratioControls = document.getElementById("summary-ratio-controls");
   const ratioButtons = document.querySelectorAll(".ratio-button");
+
+  // ---- Fonksiyonlar ----
 
   async function populateModels() {
     try {
@@ -57,6 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .forEach((el) => (el.style.display = "none"));
   }
   let currentUtterance = null;
+
   function handleTTS(textElement, playBtn) {
     if (!synth) return;
     if (synth.speaking) {
@@ -81,12 +89,14 @@ document.addEventListener("DOMContentLoaded", () => {
       playBtn.textContent = "⏸️";
     }
   }
+
   function stopTTS(playBtn) {
     if (synth) {
       synth.cancel();
       playBtn.textContent = "▶️";
     }
   }
+
   function applyStyles() {
     const styles = {
       fontFamily: controls.fontFamily.value,
@@ -100,6 +110,7 @@ document.addEventListener("DOMContentLoaded", () => {
     valueDisplays.fontSize.textContent = controls.fontSize.value;
     valueDisplays.lineHeight.textContent = controls.lineHeight.value;
   }
+
   function applyBionicReading(text) {
     return text
       .split(/(\s+)/)
@@ -112,6 +123,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .join("");
   }
+
   function resetToInitialState() {
     stopTTS(ttsPlayOriginalBtn);
     stopTTS(ttsPlaySummaryBtn);
@@ -121,7 +133,24 @@ document.addEventListener("DOMContentLoaded", () => {
     summaryContent.innerHTML = "";
     fileInput.value = "";
     summarizeButton.disabled = true;
+    toggleOriginalPanelBtn.style.display = "none";
+    mainContent.classList.remove("original-panel-collapsed");
+    toggleOriginalPanelBtn.textContent = "◀️";
+    toggleOriginalPanelBtn.title = "Paneli Gizle";
   }
+
+  // ---- Olay Dinleyicileri ----
+
+  toggleOriginalPanelBtn.addEventListener("click", () => {
+    mainContent.classList.toggle("original-panel-collapsed");
+    if (mainContent.classList.contains("original-panel-collapsed")) {
+      toggleOriginalPanelBtn.textContent = "▶️";
+      toggleOriginalPanelBtn.title = "Paneli Göster";
+    } else {
+      toggleOriginalPanelBtn.textContent = "◀️";
+      toggleOriginalPanelBtn.title = "Paneli Gizle";
+    }
+  });
 
   ratioControls.addEventListener("click", (e) => {
     if (e.target.classList.contains("ratio-button")) {
@@ -129,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
       e.target.classList.add("active");
     }
   });
+
   ttsPlayOriginalBtn.addEventListener("click", () =>
     handleTTS(originalTextContent, ttsPlayOriginalBtn)
   );
@@ -164,7 +194,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .join("");
       summarizeButton.disabled = false;
     } catch (error) {
-      originalTextContent.innerHTML = `<p style.color: red; text-align: center;">Hata: ${error.message}</p>`;
+      originalTextContent.innerHTML = `<p style="color: red; text-align: center;">Hata: ${error.message}</p>`;
     }
   });
 
@@ -187,7 +217,9 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch("http://127.0.0.1:8000/summarize-text/", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({
           text: textToSummarize,
           ratio: ratio,
@@ -214,6 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
       });
       summaryContent.innerHTML = tempDiv.innerHTML;
+      toggleOriginalPanelBtn.style.display = "block";
     } catch (error) {
       summaryContent.innerHTML = `<p style="color: red; text-align: center;">Hata: ${error.message}</p>`;
     } finally {
@@ -225,6 +258,8 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.values(controls).forEach((control) => {
     control.addEventListener("input", applyStyles);
   });
+
+  // ---- Sayfa Yüklendiğinde Başlatılacaklar ----
   populateModels();
   applyStyles();
   summarizeButton.disabled = true;

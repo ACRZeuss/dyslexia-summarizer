@@ -16,12 +16,20 @@
   <body>
     <div class="app-container">
       <main id="main-content" class="main-content-wrapper">
+        <button
+          id="toggle-original-panel"
+          title="Paneli Gizle"
+          style="display: none"
+        >
+          ◀️
+        </button>
+
         <div id="original-text-panel" class="text-panel">
           <div class="panel-header">
             <h4>Orijinal Metin</h4>
             <div class="tts-controls">
-              <button id="tts-play-original" title="Oku/Duraklat">▶️</button
-              ><button id="tts-stop-original" title="Durdur">⏹️</button>
+              <button id="tts-play-original" title="Oku/Duraklat">▶️</button>
+              <button id="tts-stop-original" title="Durdur">⏹️</button>
             </div>
           </div>
           <div id="upload-prompt" class="upload-prompt">
@@ -45,8 +53,8 @@
           <div class="panel-header">
             <h4>Yapay Zeka Özeti</h4>
             <div class="tts-controls">
-              <button id="tts-play-summary" title="Oku/Duraklat">▶️</button
-              ><button id="tts-stop-summary" title="Durdur">⏹️</button>
+              <button id="tts-play-summary" title="Oku/Duraklat">▶️</button>
+              <button id="tts-stop-summary" title="Durdur">⏹️</button>
             </div>
           </div>
           <div id="summary-content"></div>
@@ -57,8 +65,14 @@
         <h2>Görünüm Ayarları</h2>
         <p class="controls-info">Bu ayarlar her iki metne de uygulanır.</p>
         <div class="control-group">
-          <label for="font-family">Yazı Tipi</label>
-          <select id="font-family">
+          <label for="model-select">Dil Modeli</label
+          ><select id="model-select">
+            <option value="">Modeller yükleniyor...</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="font-family">Yazı Tipi</label
+          ><select id="font-family">
             <option value="'OpenDyslexic', sans-serif">OpenDyslexic</option>
             <option value="'Lexend', sans-serif">Lexend</option>
             <option value="'Open Sans', sans-serif">Open Sans</option>
@@ -94,12 +108,6 @@
           </div>
         </div>
         <div class="actions">
-          <div class="control-group">
-            <label for="model-select">Dil Modeli</label>
-            <select id="model-select">
-              <option value="">Modeller yükleniyor...</option>
-            </select>
-          </div>
           <div class="control-group">
             <label>Özet Uzunluğu</label>
             <div id="summary-ratio-controls" class="summary-ratio-controls">

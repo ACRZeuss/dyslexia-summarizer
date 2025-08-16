@@ -7,12 +7,12 @@ import io
 from pypdf import PdfReader
 from docx import Document
 
-# GÜNCELLENDİ: Gelen isteğin yapısına 'ratio' alanı eklendi.
+# GÜNCELLENDİ: İstek modeline 'model' alanı eklendi
 class TextRequest(BaseModel):
     text: str
-    ratio: float = 0.5 # Varsayılan değer 0.5 (%50)
+    ratio: float = 0.5
+    model: str # Hangi modelin kullanılacağı bilgisi
 
-# ... (Uygulama tanımı ve metin çıkarma fonksiyonları aynı kalacak) ...
 app = FastAPI()
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_credentials=True, allow_methods=["*"], allow_headers=["*"],)
 def extract_text_from_pdf(file_stream: io.BytesIO) -> str:
@@ -24,6 +24,24 @@ def extract_text_from_docx(file_stream: io.BytesIO) -> str:
 def extract_text_from_txt(file_stream: io.BytesIO) -> str:
     try: return file_stream.read().decode('utf-8')
     except Exception as e: raise HTTPException(status_code=500, detail=f"TXT okuma hatası: {e}")
+
+# YENİ ENDPOINT: Yüklü Ollama modellerini listeler
+@app.get("/models/")
+async def get_installed_models():
+    try:
+        models_data = ollama.list()
+        model_names = []
+        if 'models' in models_data and models_data['models']:
+            for model_info in models_data['models']:
+                # Hem 'name' hem de 'model' anahtarını kontrol et
+                if 'name' in model_info:
+                    model_names.append(model_info['name'])
+                elif 'model' in model_info:
+                    model_names.append(model_info['model'])
+        return {"models": model_names}
+    except Exception as e:
+        raise HTTPException(status_code=503, detail=f"Ollama servisine bağlanılamadı veya modeller listelenemedi: {repr(e)}")
+
 
 @app.post("/extract-text/")
 async def extract_text_from_file(file: UploadFile = File(...)):
@@ -39,44 +57,40 @@ async def extract_text_from_file(file: UploadFile = File(...)):
     if not text_content.strip(): raise HTTPException(status_code=400, detail="Dosya boş veya metin çıkarılamadı.")
     return {"text": text_content}
 
-
+# GÜNCELLENDİ: Özetleme fonksiyonu artık model adını da alıyor
 @app.post("/summarize-text/")
 async def summarize_text(request: TextRequest):
     text_content = request.text
-    ratio = request.ratio # Frontend'den gelen oranı al
+    ratio = request.ratio
+    model_name = request.model # Frontend'den gelen model adını al
     
     if not text_content.strip():
         raise HTTPException(status_code=400, detail="Özetlenecek metin boş olamaz.")
     
-    # YENİ: Gelen orana göre modele verilecek talimatı belirle
     if ratio <= 0.25:
         length_instruction = "Çok kısa ve öz bir özet yap. Sadece metnin ana fikrini 1-2 cümleyle ver."
     elif ratio <= 0.50:
         length_instruction = "Orta uzunlukta bir özet yap. Ana fikri ve en önemli birkaç kilit noktayı içersin."
-    else: # ratio >= 0.75
+    else:
         length_instruction = "Oldukça detaylı ve daha uzun bir özet hazırla. Önemli alt başlıkları ve detayları kaçırma."
 
     try:
-        # GÜNCELLENDİ: Prompt'a dinamik olarak uzunluk talimatı eklendi
         prompt = f"""
         Aşağıdaki metni, disleksi olan bir bireyin kolayca okuyabilmesi için özel olarak biçimlendirerek özetle.
-        Aşağıdaki kurallara harfiyen uy:
-        
+        Kurallar:
         1.  **Özet Uzunluğu:** {length_instruction}
-        2.  **Giriş Yapma:** Cevabına ASLA "İşte özetiniz" gibi bir giriş cümlesiyle başlama. Doğrudan '### Ana Fikir' başlığını yazarak başla.
-        3.  **Markdown Kullan:** Cevabını mutlaka Markdown formatında hazırla.
-        4.  **Ana Fikir Başlığı:** Özete `### Ana Fikir` başlığıyla başla. 
-        5.  **Önemli Noktalar Başlığı:** Ardından `### Önemli Noktalar` başlığı ekle ve bilgileri kısa maddeler halinde (`-` işareti kullanarak) sırala.
-        6.  **Anahtar Kelimeleri Vurgula:** Özet içindeki en önemli anahtar kelimeleri `**kelime**` şeklinde Markdown ile **kalın** yap.
-        7.  **Basit Dil:** Kesinlikle karmaşık ve uzun cümleler kurma. Her cümle kısa, net ve anlaşılır olsun.
+        2.  **Giriş Yapma:** Cevabına doğrudan '### Ana Fikir' başlığıyla başla.
+        3.  **Markdown Kullan:** `### Başlık`, `- Madde İmi`, `**Kalın Yazı**` gibi markdown formatlarını kullan.
+        4.  **Basit Dil:** Cümleler kısa, net ve anlaşılır olsun.
         
         Özetlenecek Metin:
         ---
         {text_content}
         ---
         """
+        # GÜNCELLENDİ: Model adı artık sabit değil, dinamik
         response = ollama.chat(
-            model='cogito:8b',
+            model=model_name,
             messages=[{'role': 'user', 'content': prompt}]
         )
         

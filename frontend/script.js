@@ -1,71 +1,11 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // ---- Element Referansları ----
-  // ... diğer referanslar aynı ...
-  const summarizeButton = document.getElementById("summarize-button");
-  const resetButton = document.getElementById("reset-button");
-
-  // YENİ: Oran Butonları Referansları
-  const ratioControls = document.getElementById("summary-ratio-controls");
-  const ratioButtons = document.querySelectorAll(".ratio-button");
-
-  // ... diğer referanslar aynı ...
-  const ttsPlayOriginalBtn = document.getElementById("tts-play-original");
-  const ttsStopOriginalBtn = document.getElementById("tts-stop-original");
-  // ... (kodun geri kalanı okunabilirlik için kısaltıldı, tam dosya aşağıda)
-
-  // ---- Olay Dinleyicileri (Event Listeners) ----
-
-  // YENİ: Oran Butonları için olay dinleyicisi
-  ratioControls.addEventListener("click", (e) => {
-    if (e.target.classList.contains("ratio-button")) {
-      ratioButtons.forEach((btn) => btn.classList.remove("active"));
-      e.target.classList.add("active");
-    }
-  });
-
-  // GÜNCELLENDİ: Özetle Butonu olay dinleyicisi
-  summarizeButton.addEventListener("click", async () => {
-    const textToSummarize = originalPanel.innerText;
-    if (!textToSummarize.trim()) {
-      alert("Özetlenecek metin bulunamadı.");
-      return;
-    }
-
-    // YENİ: Aktif oranı al
-    const activeRatioButton = document.querySelector(".ratio-button.active");
-    const ratio = parseFloat(activeRatioButton.dataset.ratio); // 0.25, 0.50, 0.75
-
-    summaryPanel.style.display = "flex";
-    summarizeButton.disabled = true;
-    summaryContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p class="loading-text">Özetleniyor...</p></div>`;
-    try {
-      const response = await fetch("http://127.0.0.1:8000/summarize-text/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // YENİ: Oranı isteğin body'sine ekle
-        body: JSON.stringify({ text: textToSummarize, ratio: ratio }),
-      });
-      // ... (kodun geri kalanı aynı) ...
-    } catch (error) {
-      summaryContent.innerHTML = `<p style="color: red; text-align: center;">Hata: ${error.message}</p>`;
-    } finally {
-      summarizeButton.disabled = false;
-    }
-  });
-
-  // ... (diğer tüm fonksiyonlar ve olay dinleyicileri burada) ...
-  // Aşağıda tam ve güncel script.js dosyası bulunmaktadır.
-});
-
-// YUKARIDAKİ KISALTILMIŞ ÖRNEK YERİNE AŞAĞIDAKİ TAM KODU KULLANIN
-// ---- TAM VE GÜNCEL script.js ----
-document.addEventListener("DOMContentLoaded", () => {
   const originalPanel = document.getElementById("original-text-panel");
   const summaryPanel = document.getElementById("summary-panel");
   const originalTextContent = document.getElementById("original-text-content");
   const summaryContent = document.getElementById("summary-content");
   const fileInput = document.getElementById("file-input");
   const uploadPrompt = document.getElementById("upload-prompt");
+  const modelSelect = document.getElementById("model-select");
   const controls = {
     fontFamily: document.getElementById("font-family"),
     fontSize: document.getElementById("font-size"),
@@ -85,6 +25,29 @@ document.addEventListener("DOMContentLoaded", () => {
   const ttsStopSummaryBtn = document.getElementById("tts-stop-summary");
   const ratioControls = document.getElementById("summary-ratio-controls");
   const ratioButtons = document.querySelectorAll(".ratio-button");
+
+  async function populateModels() {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/models/");
+      if (!response.ok) throw new Error("Modeller alınamadı.");
+      const data = await response.json();
+      modelSelect.innerHTML = "";
+      if (data.models && data.models.length > 0) {
+        data.models.forEach((modelName) => {
+          const option = document.createElement("option");
+          option.value = modelName;
+          option.textContent = modelName;
+          modelSelect.appendChild(option);
+        });
+      } else {
+        modelSelect.innerHTML =
+          '<option value="">Yüklü model bulunamadı</option>';
+      }
+    } catch (error) {
+      console.error(error);
+      modelSelect.innerHTML = `<option value="">Modeller yüklenemedi</option>`;
+    }
+  }
 
   const synth = window.speechSynthesis;
   if (!synth) {
@@ -201,7 +164,7 @@ document.addEventListener("DOMContentLoaded", () => {
         .join("");
       summarizeButton.disabled = false;
     } catch (error) {
-      originalTextContent.innerHTML = `<p style="color: red; text-align: center;">Hata: ${error.message}</p>`;
+      originalTextContent.innerHTML = `<p style.color: red; text-align: center;">Hata: ${error.message}</p>`;
     }
   });
 
@@ -213,6 +176,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     const activeRatioButton = document.querySelector(".ratio-button.active");
     const ratio = parseFloat(activeRatioButton.dataset.ratio);
+    const selectedModel = modelSelect.value;
+    if (!selectedModel) {
+      alert("Lütfen bir dil modeli seçin.");
+      return;
+    }
     summaryPanel.style.display = "flex";
     summarizeButton.disabled = true;
     summaryContent.innerHTML = `<div class="loader-container"><div class="loader"></div><p class="loading-text">Özetleniyor...</p></div>`;
@@ -220,7 +188,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const response = await fetch("http://127.0.0.1:8000/summarize-text/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: textToSummarize, ratio: ratio }),
+        body: JSON.stringify({
+          text: textToSummarize,
+          ratio: ratio,
+          model: selectedModel,
+        }),
       });
       if (!response.ok) {
         const err = await response.json();
@@ -253,6 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
   Object.values(controls).forEach((control) => {
     control.addEventListener("input", applyStyles);
   });
+  populateModels();
   applyStyles();
   summarizeButton.disabled = true;
 });

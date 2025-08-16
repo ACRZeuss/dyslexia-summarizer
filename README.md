@@ -8,6 +8,7 @@ Uygulamanın en güçlü özelliklerinden biri, yerel olarak **Ollama** üzerind
 
 - **Dosya Yükleme:** `.pdf`, `.docx` ve `.txt` formatındaki belgeleri destekler.
 - **Sesli Okuma (Text-to-Speech):** Orijinal metni ve özeti, tarayıcının dahili ses motoruyla dinleme imkanı sunar. Oynatma, duraklatma ve durdurma kontrolleri mevcuttur.
+- **Dinamik Dil Modeli Seçimi:** Kullanıcının yerel Ollama servisinde yüklü olan tüm dil modelleri arasından (`Qwen2`, `Llama3` vb.) seçim yapabilmesine olanak tanır.
 - **Genişletilmiş Font Desteği:** Okumayı kolaylaştıran, özel olarak eklenmiş **OpenDyslexic** fontu dahil olmak üzere çeşitli font seçenekleri sunar.
 - **Yan Yana Görünüm:** Yüklenen belgenin orijinal metni ile yapay zeka tarafından oluşturulan özetini aynı ekranda karşılaştırmalı olarak gösterir.
 - **Gelişmiş Görünüm Ayarları:**

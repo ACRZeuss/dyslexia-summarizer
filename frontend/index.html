@@ -20,8 +20,8 @@
           <div class="panel-header">
             <h4>Orijinal Metin</h4>
             <div class="tts-controls">
-              <button id="tts-play-original" title="Oku/Duraklat">▶️</button>
-              <button id="tts-stop-original" title="Durdur">⏹️</button>
+              <button id="tts-play-original" title="Oku/Duraklat">▶️</button
+              ><button id="tts-stop-original" title="Durdur">⏹️</button>
             </div>
           </div>
           <div id="upload-prompt" class="upload-prompt">
@@ -31,8 +31,8 @@
             />
             <h3>Okumak için bir dosya seçin</h3>
             <p>Desteklenen formatlar: .pdf, .docx, .txt</p>
-            <label for="file-input" class="file-label">Dosya Yükle</label>
-            <input
+            <label for="file-input" class="file-label">Dosya Yükle</label
+            ><input
               type="file"
               id="file-input"
               accept=".txt,.pdf,.docx"
@@ -45,8 +45,8 @@
           <div class="panel-header">
             <h4>Yapay Zeka Özeti</h4>
             <div class="tts-controls">
-              <button id="tts-play-summary" title="Oku/Duraklat">▶️</button>
-              <button id="tts-stop-summary" title="Durdur">⏹️</button>
+              <button id="tts-play-summary" title="Oku/Duraklat">▶️</button
+              ><button id="tts-stop-summary" title="Durdur">⏹️</button>
             </div>
           </div>
           <div id="summary-content"></div>
@@ -69,14 +69,12 @@
         <div class="control-group">
           <label for="font-size"
             >Yazı Boyutu: <span id="font-size-value">20</span>px</label
-          >
-          <input type="range" id="font-size" min="12" max="48" value="20" />
+          ><input type="range" id="font-size" min="12" max="48" value="20" />
         </div>
         <div class="control-group">
           <label for="line-height"
             >Satır Aralığı: <span id="line-height-value">1.8</span></label
-          >
-          <input
+          ><input
             type="range"
             id="line-height"
             min="1"
@@ -87,29 +85,32 @@
         </div>
         <div class="control-group color-picker">
           <div>
-            <label for="text-color">Yazı Rengi</label>
-            <input type="color" id="text-color" value="#2C3E50" />
+            <label for="text-color">Yazı Rengi</label
+            ><input type="color" id="text-color" value="#2C3E50" />
           </div>
           <div>
-            <label for="bg-color">Arka Plan</label>
-            <input type="color" id="bg-color" value="#FDFDF5" />
+            <label for="bg-color">Arka Plan</label
+            ><input type="color" id="bg-color" value="#FDFDF5" />
           </div>
         </div>
-
         <div class="actions">
+          <div class="control-group">
+            <label for="model-select">Dil Modeli</label>
+            <select id="model-select">
+              <option value="">Modeller yükleniyor...</option>
+            </select>
+          </div>
           <div class="control-group">
             <label>Özet Uzunluğu</label>
             <div id="summary-ratio-controls" class="summary-ratio-controls">
               <button class="ratio-button active" data-ratio="0.25">
-                Kısa (%25)
-              </button>
-              <button class="ratio-button" data-ratio="0.50">Orta (%50)</button>
-              <button class="ratio-button" data-ratio="0.75">
+                Kısa (%25)</button
+              ><button class="ratio-button" data-ratio="0.50">Orta (%50)</button
+              ><button class="ratio-button" data-ratio="0.75">
                 Detaylı (%75)
               </button>
             </div>
           </div>
-
           <button id="summarize-button">Yapay Zeka ile Özetle</button>
           <button id="reset-button" class="secondary">Yeni Dosya Yükle</button>
         </div>
